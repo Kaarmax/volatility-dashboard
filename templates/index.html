@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volatility Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .score-display {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .score-number {
+            font-size: 5em;
+            font-weight: bold;
+            color: {{ data.risk_color }};
+            line-height: 1;
+        }
+        
+        .score-label {
+            font-size: 1.2em;
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        .risk-badge {
+            display: inline-block;
+            padding: 10px 30px;
+            background: {{ data.risk_color }};
+            color: white;
+            border-radius: 25px;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        
+        .section {
+            margin: 30px 0;
+        }
+        
+        .section-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title span {
+            margin-right: 10px;
+        }
+        
+        .info-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .catalyst-list {
+            list-style: none;
+        }
+        
+        .catalyst-list li {
+            padding: 12px;
+            background: #f8f9fa;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            font-size: 1.1em;
+        }
+        
+        .alert-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .alert-box.high {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        
+        .alert-box.low {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 5px;
+        }
+        
+        .btn:hover {
+            background: #5568d3;
+        }
+        
+        .nav-buttons {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Volatility Dashboard</h1>
+            <p>{{ data.date }}</p>
+        </div>
+        
+        <div class="card">
+            <div class="score-display">
+                <div class="score-number">{{ data.score }}/9</div>
+                <div class="score-label">Volatility Score</div>
+                <div class="risk-badge">{{ data.risk_emoji }} {{ data.risk_level }} RISK</div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">
+                    <span>📈</span> Market Status
+                </div>
+                <div class="info-box">
+                    <div class="info-row">
+                        <span class="info-label">Current VIX</span>
+                        <span class="info-value">{{ data.vix }} ({{ data.vix_status }})</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Outlook</span>
+                        <span class="info-value">{{ data.description }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">
+                    <span>📋</span> Catalysts Today
+                </div>
+                <ul class="catalyst-list">
+                    {% for catalyst in data.catalysts %}
+                    <li>{{ catalyst }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            {% if data.next_high_risk %}
+            <div class="section">
+                <div class="section-title">
+                    <span>🔮</span> Next High Risk Period
+                </div>
+                <div class="alert-box">
+                    <strong>{{ data.next_high_risk.date }}</strong> ({{ data.next_high_risk.days_away }} days away)
+                    <br>
+                    {% if data.next_high_risk.type == 'fed' %}
+                    Fed Meeting - Expect increased volatility
+                    {% else %}
+                    Score: {{ data.next_high_risk.score }}/9
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="nav-buttons">
+                <a href="/weekly" class="btn">📅 View Next 7 Days</a>
+                <a href="/fed-calendar" class="btn">🏛️ Fed Calendar</a>
+                <a href="#" onclick="refreshData(); return false;" class="btn">🔄 Refresh</a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Updates daily • Built with Flask</p>
+        </div>
+    </div>
+    <script>
+        function refreshData() {
+            location.reload();
+        }
+        
+        // Auto-refresh every 5 minutes
+        setTimeout(refreshData, 300000);
+    </script>
+</body>
+</html>

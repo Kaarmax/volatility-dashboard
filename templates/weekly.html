@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Volatility Forecast</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .day-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border-left: 5px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .day-info {
+            flex: 1;
+        }
+        
+        .day-date {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .day-level {
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .day-score {
+            font-size: 2em;
+            font-weight: bold;
+            text-align: right;
+        }
+        
+        .summary-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .summary-box h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .summary-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 5px;
+        }
+        
+        .btn:hover {
+            background: #5568d3;
+        }
+        
+        .nav-buttons {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-btn">← Back to Dashboard</a>
+        
+        <div class="header">
+            <h1>📅 7-Day Volatility Forecast</h1>
+            <p>Next Week's Risk Outlook</p>
+        </div>
+        
+        <div class="card">
+            <div class="summary-box">
+                <h2>Week Overview</h2>
+                <p>Volatility scores for the next 7 trading days</p>
+                <div class="summary-stats">
+                    <div class="stat">
+                        <div class="stat-number">{{ weekly|length }}</div>
+                        <div class="stat-label">Trading Days</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">
+                            {% set high_risk = weekly|selectattr('level', 'equalto', 'HIGH')|list|length %}
+                            {{ high_risk }}
+                        </div>
+                        <div class="stat-label">High Risk Days</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">
+                            {% set avg_score = (weekly|sum(attribute='score') / weekly|length)|round(1) %}
+                            {{ avg_score }}
+                        </div>
+                        <div class="stat-label">Avg Score</div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 style="margin-bottom: 20px; color: #333;">Daily Breakdown</h3>
+            
+            {% for day in weekly %}
+            <div class="day-card" style="border-left-color: {{ day.color }};">
+                <div class="day-info">
+                    <div class="day-date">{{ day.date }}</div>
+                    <div class="day-level">{{ day.level }} Risk</div>
+                </div>
+                <div class="day-score" style="color: {{ day.color }};">
+                    {{ day.score }}/9
+                </div>
+            </div>
+            {% endfor %}
+            
+            <div class="nav-buttons">
+                <a href="/" class="btn">← Back to Today</a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Updates daily • Built with Flask</p>
+        </div>
+    </div>
+</body>
+</html>
