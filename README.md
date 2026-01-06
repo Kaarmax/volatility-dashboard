@@ -73,13 +73,6 @@ market-volatility-score/
 └── below18.py                  # VIX checker
 ```
 
-## Backtest Results
-
-32 FOMC meetings (Jan 2020 - Nov 2024):
-- High-score trades (≥7): 43.75% win rate
-- Average gain on wins: +89.4%
-- Best trade: +156% (July 31, 2024)
-
 ## Installation
 
 ```bash
